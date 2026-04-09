@@ -27,6 +27,9 @@ Route::get('/product/{product}', [ProductController::class, 'show'])
 // Rutas privadas
 Route::middleware('auth')->group(function () {
 
+    // Esta línea registra automáticamente el POST para 'products'
+    Route::resource('products', ProductController::class)->except(['index', 'show']);
+
     Route::get('/products/create', [ProductController::class, 'create'])
         ->name('products.create');
     Route::get('/products', [ProductController::class, 'store'])

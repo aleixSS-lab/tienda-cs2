@@ -1,13 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class ProductController extends Controller {
     public function index() {
-        $products = Product::all();
+        $products = \App\Models\Product::all();
         return view('products.index', compact('products'));
     }
 
@@ -16,22 +15,23 @@ class ProductController extends Controller {
     }
 
     public function store(Request $request) {
-        $request->validate([
-            'nombre' => 'required',
-            'precio' => 'required|numeric',
-            'stock' => 'required|integer',
-            'descripcion' => 'required'
+       $validated = $request->validate([
+            'nombre' => 'required | max:255',
+            'precio' => 'required|numeric | min:0.2',
+            'stock' => 'required|integer | min:0',
+            'descripcion' => 'required',
+            'imagen' => 'required | url',
         ]);
-        Product::create($request->all());
-        return redirect()->route('products.index');
+        \App\Models\Product::create($validated);
+        return redirect()->route('products.index')->with('success', 'Skin añadida correctamente.'); 
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Product $product)
     {
-        //
+        return view('products.show', compact('product'));   
     }
 
     /**
@@ -45,9 +45,9 @@ class ProductController extends Controller {
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Product $product)
     {
-        //
+        return redirect()->route('products.show', $product)->with('success', 'Skin actualizada.');
     }
 
     /**
@@ -55,6 +55,8 @@ class ProductController extends Controller {
      */
     public function destroy(string $id)
     {
-        //
+        $product = Product::findOrFail($id);
+        $product->delete();
+        return redirect()->route('products.index')->with('success', 'Skin eliminada correctamente.');
     }
 }

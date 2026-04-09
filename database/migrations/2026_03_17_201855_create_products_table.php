@@ -18,6 +18,7 @@ return new class extends Migration
         $table->integer('stock');
         $table->string('imagen')->nullable(); // Guardaremos URLs de fotos
         $table->timestamps();
+        
     });
 }
 
