@@ -3,13 +3,19 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+   $totalSkins = Product::count();
+    $valorTotal = Product::sum(DB::raw('precio * stock'));
+    $bajoStock = Product::where('stock', '<', 3)->count();
+
+    return view('dashboard', compact('totalSkins', 'valorTotal', 'bajoStock'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/', function () { return view('welcome'); });

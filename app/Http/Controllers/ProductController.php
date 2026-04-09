@@ -39,7 +39,8 @@ class ProductController extends Controller {
      */
     public function edit(string $id)
     {
-        //
+        $product = Product::findOrFail($id);
+        return view('products.edit', compact('product'));
     }
 
     /**
@@ -47,8 +48,19 @@ class ProductController extends Controller {
      */
     public function update(Request $request, Product $product)
     {
-        return redirect()->route('products.show', $product)->with('success', 'Skin actualizada.');
+       $validated = $request->validate([
+        'nombre' => 'required|max:255',
+        'descripcion' => 'required',
+        'precio' => 'required|numeric|min:0',
+        'stock' => 'required|integer|min:0',
+        'imagen' => 'nullable|url',
+    ]);
+
+    $product->update($validated);
+
+    return redirect()->route('products.show', $product)->with('success', 'Skin actualizada.');
     }
+    
 
     /**
      * Remove the specified resource from storage.
@@ -59,4 +71,4 @@ class ProductController extends Controller {
         $product->delete();
         return redirect()->route('products.index')->with('success', 'Skin eliminada correctamente.');
     }
-}
+} 
